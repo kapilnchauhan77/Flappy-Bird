@@ -1,0 +1,214 @@
+# CodeSkulptor runs Python programs in your browser.
+# Click the upper left button to run this simple demo.
+
+# CodeSkulptor runs in Chrome 18+, Firefox 11+, and Safari 6+.
+# Some features may work in other browsers, but do not expect
+# full functionality.  It does NOT run in Internet Explorer.
+
+import simplegui
+import random
+
+#-------------------------------------------------------------------------------------------------------------
+x=25
+x2=275
+x4=375
+x5=400
+
+
+
+x1=50
+x3=300
+y=[20,60,100,140,180]
+
+u=False
+u1=False
+u2=False
+jump=False
+main=True
+u24=False
+sc=False
+
+xpos=150
+ypos=100
+size=10
+gravity=0.2
+velocity=0
+
+kd=0
+ku=0
+
+score=0
+
+#-----------------------------------------------------------------------------------------------------------
+def keydown(kd):
+    global jump
+    if simplegui.KEY_MAP['up']==kd:
+        jump=True
+def keyup(ku):
+    
+    global jump
+    if simplegui.KEY_MAP['up']==ku:
+        jump=False
+
+
+# Handler to draw on canvas
+def draw(canvas):
+    
+    global x,x1,u,x2,x3,z,z1,z2,u1,z3,u2,x4,x5,z_,z_1,z_2,z_3,xpos,ypos,size,fall,sc,main,gravity,velocity,jump,score,u24
+    if main:
+        canvas.draw_polygon([[x,0],[x1,0],[x1,200],[x,200]],4,'black','black')
+        
+        
+        
+    if x==25:
+        u=True
+        u1=True
+        u2=True
+    if x==125:
+        u24=True
+        u2=True
+        
+    
+    if u1:
+        z=random.choice(range(0,5))
+        z3=random.choice(range(0,5))
+        z1=y[z]
+        if z==z3:
+            z3=4
+            if z==4:
+                z3=2
+                z2=y[z3]
+            else:
+                z2=y[z3]
+        else:
+            z2=y[z3]
+        
+    
+        z_=random.choice(range(0,5))
+        z_3=random.choice(range(0,5))
+        z_1=y[z_]
+        if z_==z_3:
+            z_3=4
+            
+            if z_==4:
+                z_3=2
+                z_2=y[z_3]
+            else:
+                z_2=y[z_3]
+        else:
+            z_2=y[z_3]
+        u1=False
+       
+    if u:
+        
+        canvas.draw_polygon([[x2,0],[x3,0],[x3,200],[x2,200]],4,'red','red')
+        canvas.draw_polygon([[x2,z1],[x3,z1],[x3,z2],[x2,z2]],4,'black','black')
+        
+        x2=x2-1
+        x3=x3-1
+        if x3==0:
+            u=False
+            x2=275
+            x3=300
+    if u2:
+        canvas.draw_polygon([[x4,0],[x5,0],[x5,200],[x4,200]],4,'red','red')
+        canvas.draw_polygon([[x4,z_1],[x5,z_1],[x5,z_2],[x4,z_2]],4,'black','black')
+        x4=x4-1
+        x5=x5-1
+        if x5==0:
+            u2=False
+            x4=375
+            x5=400
+    canvas.draw_circle([xpos,ypos],size,4,'blue')
+    if not jump:
+        velocity+=gravity
+        
+    if jump:
+        velocity-=0.4
+        
+    ypos+=velocity    
+        
+        
+    x=x+1
+    x1=x1+1
+    
+    
+    if x==300:
+        x=0
+        x1=25
+    
+    if ypos>=300-size-4 or ypos<=0+size+4:
+        u=False
+        u1=False
+        u2=False
+        jump=False
+        main=False
+        canvas.draw_text('Game over',[110,100],20,'red')
+    if xpos>=x2-size-4 and xpos<=x3+size+4:
+        if z1>z2:
+            if not ypos>=z2 and ypos<=z1:
+                u=False
+                u1=False
+                u2=False
+                jump=False
+                main=False
+                canvas.draw_text('Game over',[110,100],20,'red')
+        
+            if ypos>=z2 and ypos<=z1:
+                if xpos==(x2+x3)/2:
+                    sc=True
+                
+        if z1<z2:
+            if not ypos<=z2 and ypos>=z1:
+                u=False
+                u1=False
+                u2=False
+                jump=False
+                main=False
+                canvas.draw_text('Game over',[110,100],20,'red')
+            if ypos<=z2 and ypos>=z1:
+                if xpos==(x2+x3)/2:
+                    sc=True
+                
+
+    
+    if xpos>=x4 and xpos<=x5:
+        if z_1>z_2:
+            if not ypos>=z_2 and ypos<=z_1:
+                u=False
+                u1=False
+                u2=False
+                jump=False
+                main=False
+                canvas.draw_text('Game over',[110,100],20,'red')
+        
+            if ypos>=z_2 and ypos<=z_1:
+                 if xpos==(x4+x5)/2:
+                    sc=True
+                
+        if z_1<z_2:
+            if not ypos<=z_2 and ypos>=z_1:
+                u=False
+                u1=False
+                u2=False
+                jump=False
+                main=False
+                canvas.draw_text('Game over',[110,100],20,'red')
+            if ypos<=z_2 and ypos>=z_1:
+                if xpos==(x4+x5)/2:
+                    sc=True
+    canvas.draw_text('Score='+str(score),[220,20],20,'Yellow') 
+    if sc:
+        score=score+1
+        sc=False
+
+    
+# Create a frame and assign callbacks to event handlers
+frame = simplegui.create_frame("Flappy bird", 300, 200)
+
+frame.set_draw_handler(draw)
+frame.set_keydown_handler(keydown)
+frame.set_keyup_handler(keyup)
+
+# Start the frame animation
+frame.start()
